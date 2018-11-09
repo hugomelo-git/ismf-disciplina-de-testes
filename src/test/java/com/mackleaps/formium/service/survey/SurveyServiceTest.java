@@ -4,6 +4,8 @@ import com.mackleaps.formium.Application;
 import com.mackleaps.formium.exceptions.ComponentNotFoundException;
 import com.mackleaps.formium.model.survey.Survey;
 import com.mackleaps.formium.repository.survey.SurveyRepository;
+import com.mackleaps.formium.repository.survey_application.SurveyResultsRepository;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -20,6 +23,8 @@ public class SurveyServiceTest {
 
     @Mock
     private SurveyRepository surveyRepository;
+    @Mock
+    private SurveyResultsRepository surveyResultsRepository;
 
     private SurveyService surveyService;
 
@@ -73,6 +78,22 @@ public class SurveyServiceTest {
         when(surveyRepository.exists(NOT_EXISTING_SURVEY_ID)).thenThrow(new ComponentNotFoundException());
 
         surveyService.deleteSurvey(NOT_EXISTING_SURVEY_ID);
+    }
+
+    @Test
+    public void shouldAddSurvey(){
+        Survey survey = new Survey("jose","jose guido","mesma coisa");
+        survey.setId(10L);
+
+        when(surveyRepository.saveAndFlush(survey)).thenReturn(survey);
+
+        Survey surveyIncluded = surveyRepository.saveAndFlush(survey);
+        assertNotNull(surveyIncluded);
+        assertEquals(new Long(10L), surveyIncluded.getId());
+        assertEquals("jose", surveyIncluded.getPrefix());
+        assertEquals("jose guido", surveyIncluded.getTitle());
+        assertEquals("mesma coisa", surveyIncluded.getDescription());
+
     }
 
 }
