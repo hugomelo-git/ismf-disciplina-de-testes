@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -80,19 +81,53 @@ public class SurveyServiceTest {
         surveyService.deleteSurvey(NOT_EXISTING_SURVEY_ID);
     }
 
-    @Test
+     @Test
     public void shouldAddSurvey(){
-        Survey survey = new Survey("jose","jose guido","mesma coisa");
-        survey.setId(10L);
+        Survey survey = new Survey("José",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin varius egestas libero semper pharetra. Pellentesque nec ipsum ac lectus blandit mattis. " +
+                        "Fusce varius diam ut massa feugiat iaculis. Aenean nec commodo elit, ac malesuada tortor. Sed sagittis venenatis leo, et condimentum lectus sollicitudin " +
+                        "non. Ut volutpat faucibus ante et venenatis. Sed nec justo ac justo tincidunt interdum id non dui. Nam eget ipsum tincidunt, convallis sapien non, molestie " +
+                        "ectus. Suspendisse quis maximus tortor. Nullam eget.",
+                "Caso de teste");
 
         when(surveyRepository.saveAndFlush(survey)).thenReturn(survey);
 
-        Survey surveyIncluded = surveyRepository.saveAndFlush(survey);
+        Survey surveyIncluded = surveyService.addSurvey(survey);
         assertNotNull(surveyIncluded);
-        assertEquals(new Long(10L), surveyIncluded.getId());
-        assertEquals("jose", surveyIncluded.getPrefix());
-        assertEquals("jose guido", surveyIncluded.getTitle());
-        assertEquals("mesma coisa", surveyIncluded.getDescription());
+        assertEquals("José", surveyIncluded.getPrefix());
+        assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin varius egestas libero semper pharetra. Pellentesque nec ipsum ac lectus blandit mattis. " +
+                "Fusce varius diam ut massa feugiat iaculis. Aenean nec commodo elit, ac malesuada tortor. Sed sagittis venenatis leo, et condimentum lectus sollicitudin " +
+                "non. Ut volutpat faucibus ante et venenatis. Sed nec justo ac justo tincidunt interdum id non dui. Nam eget ipsum tincidunt, convallis sapien non, molestie " +
+                "ectus. Suspendisse quis maximus tortor. Nullam eget.", surveyIncluded.getTitle());
+        assertEquals("Caso de teste", surveyIncluded.getDescription());
+
+    }
+
+    @Test
+    public void shouldAddSurveyWithNoPrefix(){
+        Survey survey = new Survey(null,"Teste","Caso de teste");
+
+        when(surveyRepository.saveAndFlush(survey)).thenReturn(survey);
+
+        Survey surveyIncluded = surveyService.addSurvey(survey);
+        assertNotNull(surveyIncluded);
+        assertNull(surveyIncluded.getPrefix());
+        assertEquals("Teste", surveyIncluded.getTitle());
+        assertEquals("Caso de teste", surveyIncluded.getDescription());
+
+    }
+
+    @Test
+    public void shouldAddSurveyWithPrefixTenChar(){
+        Survey survey = new Survey("teste   10","Teste","Caso de teste");
+
+        when(surveyRepository.saveAndFlush(survey)).thenReturn(survey);
+
+        Survey surveyIncluded = surveyService.addSurvey(survey);
+        assertNotNull(surveyIncluded);
+        assertEquals("teste   10", surveyIncluded.getPrefix());
+        assertEquals("Teste", surveyIncluded.getTitle());
+        assertEquals("Caso de teste", surveyIncluded.getDescription());
 
     }
 
