@@ -130,5 +130,67 @@ public class SurveyServiceTest {
         assertEquals("Caso de teste", surveyIncluded.getDescription());
 
     }
+    
+     @Test
+    public void shouldAddSurveyWithTitleOneChar(){
+        Survey survey = new Survey("teste   10","A","Caso de teste");
+
+        when(surveyRepository.saveAndFlush(survey)).thenReturn(survey);
+
+        Survey surveyIncluded = surveyService.addSurvey(survey);
+        assertNotNull(surveyIncluded);
+        assertEquals("teste   10", surveyIncluded.getPrefix());
+        assertEquals("A", surveyIncluded.getTitle());
+        assertEquals("Caso de teste", surveyIncluded.getDescription());
+
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionForTryingToAddSurveyWithoutTitle(){
+        Survey survey = new Survey("José",null,"Caso de teste");
+
+        when(surveyRepository.saveAndFlush(survey)).thenThrow(NullPointerException.class);
+
+        Survey surveyIncluded = surveyService.addSurvey(survey);
+        assertNotNull(surveyIncluded);
+        assertEquals("José", surveyIncluded.getPrefix());
+        assertNull(surveyIncluded.getTitle());
+        assertEquals("Caso de teste", surveyIncluded.getDescription());
+
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowExceptionForTryingToAddSurveyWithPrefixMoreThenTenChar(){
+        Survey survey = new Survey("Mais de 10 caracteres","Teste com mais de 10 Char","Caso de teste");
+
+        when(surveyRepository.saveAndFlush(survey)).thenThrow(RuntimeException.class);
+
+        Survey surveyIncluded = surveyService.addSurvey(survey);
+        assertNotNull(surveyIncluded);
+        assertEquals("Mais de 10 caracteres", surveyIncluded.getPrefix());
+        assertEquals("Teste com mais de 10 Char", surveyIncluded.getTitle());
+        assertEquals("Caso de teste", surveyIncluded.getDescription());
+
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowExceptionForTryingToAddSurveyWithTitleGraterThen300Char(){
+        Survey survey = new Survey("Mais de 10 caracteres",
+                "UHHUQEDYMITWCTERZNHOVCRMCVGJKHCPWXJKCZLJJZBFTLAJOLYMIIMCHEHPVVZLYXNFZVYWGCHZRENECGHWBSAIGEBVXHWRNEI" +
+                        "APXIBXCJHURDGNIYBZYHVHKDTQIXBJTTSAFMBJQQJUGHPRNHWNJAVJREZSEDKDQGZNXZQDMKIHCCUDKKZLQFTNUJCUCVDE" +
+                        "QBHHVJGHWZRYAGEEMNWCFDCCRQPNWWTSRVAYLEBOQCTUSSJDJEKLCMVWYYTQGRTBZLFIFNPWWUAUSGAGQOWYJJINFVQKLM" +
+                        "VXGXLLXTHBJMWHVEMJQJFSYMZMHXDNZG",
+                "Caso de teste");
+
+        when(surveyRepository.saveAndFlush(survey)).thenThrow(RuntimeException.class);
+
+        Survey surveyIncluded = surveyService.addSurvey(survey);
+        assertNotNull(surveyIncluded);
+        assertEquals("Mais de 10 caracteres", surveyIncluded.getPrefix());
+        assertEquals("Caso de teste", surveyIncluded.getDescription());
+
+    }
+    
+    
 
 }
