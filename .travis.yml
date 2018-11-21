@@ -1,7 +1,5 @@
 language: java
-script:
--mvn test
--mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 jdk:
  - oraclejdk8
-
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
